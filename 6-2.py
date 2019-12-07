@@ -39,16 +39,6 @@ def mergeOrbits(orbitToKeep, orbitToInsert):
     for subOrbit in orbitToInsert.orbiters:
         orbitToKeep.addChild(subOrbit)
 
-    # matchTest = getMatchingOrbits(orbitList[0], orbitList[2])
-    # print(matchTest)
-    # for orbit in matchTest:
-    #     orbit.printOrbit()
-# for orbit in orbitList:
-#     print(matchDoesExist(orbitList[0], orbit))
-#     for match in getMatchingOrbits(orbitList[0], orbit):
-#         orbit.printOrbit()
-#     orbit.printOrbit()
-
 
 def getIterativeDepth(orbit, depth):
     currDepth = depth
@@ -60,40 +50,16 @@ def getIterativeDepth(orbit, depth):
     return currDepth
 
 
-# def orbitsCanMerge(orbitA, orbitB):
-#     return len(getMatchingOrbits(orbitA, orbitB) + getMatchingOrbits(orbitB, orbitA))
-
-
-# mergeIndex = 1
-# while len(orbitList) > 1:
-#     print(len(orbitList), mergeIndex)
-#     matches = getMatchingOrbits(orbitList[0], orbitList[mergeIndex])
-#     # print(matches)
-#     if len(matches) > 1:
-#         print("ERROR")
-#     if len(matches) > 0:
-#         mergeOrbits(matches[0], orbitList.pop(mergeIndex))
-#         print(len(orbitList))
-#     else:
-#         if mergeIndex < len(orbitList) - 1:
-#             mergeIndex += 1
-#         else:
-#             mergeIndex = 1
-#     orbitList[0].printOrbit()
-# print(getIterativeDepth(orbitList[0], 0))
-
-# currOrbitIndex = 0
-# searchOrbitIndex = 0
-# while len(orbitList) > 1:
-#     currOrbit = orbitList[currOrbitIndex]
-#     while searchOrbitIndex < len(orbitList):
-#         if currOrbitIndex != searchOrbitIndex:
-#             searchOrbit = orbitList[searchOrbitIndex]
-#             matches = getMatchingOrbits(currOrbit, searchOrbit)
-#             if len(matches) > 0:
-#                 mergeOrbits(searchOrbit, orbitList.pop(currOrbitIndex))
-#                 break
-#         searchOrbitIndex += 1
+def path(root, targetOrbit):
+    pathArr = []
+    if root.name == targetOrbit.name:
+        pathArr.append(root)
+    else:
+        for subOrbit in root.orbiters:
+            if len(getMatchingOrbits(targetOrbit, subOrbit)) > 0:
+                pathArr.append(root)
+                pathArr += path(subOrbit, targetOrbit)
+    return pathArr
 
 
 while len(orbitList) > 1:
@@ -108,5 +74,21 @@ while len(orbitList) > 1:
     else:
         orbitList.append(orbitToMerge)
 
-orbitList[0].printOrbit()
-print(getIterativeDepth(orbitList[0], 0))
+# orbitList[0].printOrbit()
+# print(getIterativeDepth(orbitList[0], 0))
+
+rootOrbit = orbitList[0]
+# rootOrbit.printOrbit()
+youOrbit = getMatchingOrbits(Orbit("YOU"), rootOrbit)[0]
+santaOrbit = getMatchingOrbits(Orbit("SAN"), rootOrbit)[0]
+
+youPath = path(rootOrbit, youOrbit)
+santaPath = path(rootOrbit, santaOrbit)
+
+commonIndex = 0
+while youPath[commonIndex] == santaPath[commonIndex]:
+    commonIndex += 1
+#print(commonIndex, len(youPath), len(santaPath))
+
+orbitalDistance = len(youPath) - commonIndex + len(santaPath) - commonIndex - 2
+print(orbitalDistance)
