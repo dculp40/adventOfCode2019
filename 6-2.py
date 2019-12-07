@@ -60,7 +60,7 @@ def getSize(orbit, depth):
     return size
 
 
-mergeIndex = 1
+mergeIndex = 2
 while len(orbitList) > 1:
     matches = getMatchingOrbits(orbitList[0], orbitList[mergeIndex])
     # print(matches)
