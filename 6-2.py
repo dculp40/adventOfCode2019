@@ -17,7 +17,7 @@ class Orbit:
 
 
 orbitList = []
-with open('orbitTestData.txt', 'r') as open_file:
+with open('orbitRealData.txt', 'r') as open_file:
     for orbit in open_file:
         orbitList.append(orbit.strip())
 
@@ -25,19 +25,19 @@ orbitList = [Orbit(orbitPair.split(')')[0], [Orbit(
     orbitPair.split(')')[1])]) for orbitPair in orbitList]
 
 
-def getMatchingOrbits(orbitA, orbitB):
+def getMatchingOrbits(orbitToSeek, orbitToCrawl):
     matchingOrbits = []
-    if orbitA.name == orbitB.name:
-        matchingOrbits.append(orbitA)
+    if orbitToCrawl.name == orbitToSeek.name:
+        matchingOrbits.append(orbitToCrawl)
     else:
-        for subOrbit in orbitA.orbiters:
-            matchingOrbits += (getMatchingOrbits(subOrbit, orbitB))
+        for subOrbit in orbitToCrawl.orbiters:
+            matchingOrbits += (getMatchingOrbits(orbitToSeek, subOrbit))
     return matchingOrbits
 
 
-def mergeOrbits(orbitA, orbitB):
-    for subOrbit in orbitB.orbiters:
-        orbitA.addChild(subOrbit)
+def mergeOrbits(orbitToKeep, orbitToInsert):
+    for subOrbit in orbitToInsert.orbiters:
+        orbitToKeep.addChild(subOrbit)
 
     # matchTest = getMatchingOrbits(orbitList[0], orbitList[2])
     # print(matchTest)
@@ -50,26 +50,63 @@ def mergeOrbits(orbitA, orbitB):
 #     orbit.printOrbit()
 
 
-def getSize(orbit, depth):
-    size = 0
+def getIterativeDepth(orbit, depth):
+    currDepth = depth
     if len(orbit.orbiters) == 0:
-        size = depth
+        return currDepth
     else:
         for subOrbit in orbit.orbiters:
-            size += 1 + getSize(subOrbit, depth + 1)
-    return size
+            currDepth += getIterativeDepth(subOrbit, depth + 1)
+    return currDepth
 
 
-mergeIndex = 2
+# def orbitsCanMerge(orbitA, orbitB):
+#     return len(getMatchingOrbits(orbitA, orbitB) + getMatchingOrbits(orbitB, orbitA))
+
+
+# mergeIndex = 1
+# while len(orbitList) > 1:
+#     print(len(orbitList), mergeIndex)
+#     matches = getMatchingOrbits(orbitList[0], orbitList[mergeIndex])
+#     # print(matches)
+#     if len(matches) > 1:
+#         print("ERROR")
+#     if len(matches) > 0:
+#         mergeOrbits(matches[0], orbitList.pop(mergeIndex))
+#         print(len(orbitList))
+#     else:
+#         if mergeIndex < len(orbitList) - 1:
+#             mergeIndex += 1
+#         else:
+#             mergeIndex = 1
+#     orbitList[0].printOrbit()
+# print(getIterativeDepth(orbitList[0], 0))
+
+# currOrbitIndex = 0
+# searchOrbitIndex = 0
+# while len(orbitList) > 1:
+#     currOrbit = orbitList[currOrbitIndex]
+#     while searchOrbitIndex < len(orbitList):
+#         if currOrbitIndex != searchOrbitIndex:
+#             searchOrbit = orbitList[searchOrbitIndex]
+#             matches = getMatchingOrbits(currOrbit, searchOrbit)
+#             if len(matches) > 0:
+#                 mergeOrbits(searchOrbit, orbitList.pop(currOrbitIndex))
+#                 break
+#         searchOrbitIndex += 1
+
+
 while len(orbitList) > 1:
-    matches = getMatchingOrbits(orbitList[0], orbitList[mergeIndex])
-    # print(matches)
-    if len(matches) > 0:
-        mergeOrbits(matches[0], orbitList.pop(mergeIndex))
+    orbitToMerge = orbitList.pop(0)
+    targetOrbit = []
+    searchIndex = 0
+    while searchIndex < len(orbitList):
+        targetOrbit += getMatchingOrbits(orbitToMerge, orbitList[searchIndex])
+        searchIndex += 1
+    if len(targetOrbit) > 0:
+        mergeOrbits(targetOrbit[0], orbitToMerge)
     else:
-        if mergeIndex < len(orbitList):
-            mergeIndex += 1
-        else:
-            mergeIndex = 1
+        orbitList.append(orbitToMerge)
+
 orbitList[0].printOrbit()
-print(getSize(orbitList[0], 0))
+print(getIterativeDepth(orbitList[0], 0))
