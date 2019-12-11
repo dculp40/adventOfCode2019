@@ -1,4 +1,5 @@
 import math
+import numpy
 
 mapArr = []
 
@@ -21,20 +22,20 @@ for i in range(len(asteroidCoords)):
     asteroidMeasurements = []
     potentialStation = asteroidCoords.pop(0)
     for asteroid in asteroidCoords:
-        dx = asteroid[0] - potentialStation[0]
-        dy = asteroid[1] - potentialStation[1]
+        dx = float(asteroid[0]) - potentialStation[0]
+        dy = float(asteroid[1]) - potentialStation[1]
         if dx == 0:
             if dy > 0:
-                slope = "-inf"
+                slope = 270
             else:
-                slope = "+inf"
-        elif dy == 0:
-            if dx > 0:
-                slope = "+zero"
-            else:
-                slope = "-zero"
+                slope = 90
+        # elif dy == 0:
+        #     if dx > 0:
+        #         slope = "+zero"
+        #     else:
+        #         slope = "-zero"
         else:
-            slope = dy/dx
+            slope = math.degrees(numpy.arctan2(dy, dx))
         distance = math.sqrt(dx ** 2 + dy ** 2)
         asteroidMeasurements.append((slope, distance))
 
